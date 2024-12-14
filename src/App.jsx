@@ -24,7 +24,7 @@ function App() {
 
       const querySnapshot = await getDocs(q);
       if (!querySnapshot.empty) {
-        setMessage("This email is already on the naughty list!");
+        setMessage("You already are on the naughty list!");
         return;
       }
       await addDoc(collection(firestore, "participants"), {
