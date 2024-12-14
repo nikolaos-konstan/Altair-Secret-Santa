@@ -5,21 +5,39 @@ import "./App.css";
 
 function App() {
   const [userName, setUserName] = useState("");
-  const [userEmail, setUserEmail] = useState("");
   const [message, setMessage] = useState("");
+
+  const generateUniqueCode = async () => {
+    let code;
+    let isUnique = false;
+
+    while (!isUnique) {
+      code = Math.floor(1000 + Math.random() * 9000).toString();
+      const q = query(
+        collection(firestore, "participants"),
+        where("code", "==", code)
+      );
+      const querySnapshot = await getDocs(q);
+      if (querySnapshot.empty) {
+        isUnique = true;
+      }
+    }
+
+    return code;
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!userName || !userEmail) {
-      setMessage("Please fill in both fields!");
+    if (!userName) {
+      setMessage("Please enter your name!");
       return;
     }
 
     try {
       const q = query(
         collection(firestore, "participants"),
-        where("email", "==", userEmail)
+        where("name", "==", userName)
       );
 
       const querySnapshot = await getDocs(q);
@@ -27,15 +45,21 @@ function App() {
         setMessage("You already are on the naughty list!");
         return;
       }
+
+      const uniqueCode = await generateUniqueCode();
       await addDoc(collection(firestore, "participants"), {
         name: userName,
-        email: userEmail,
+        code: uniqueCode,
       });
 
       setUserName("");
-      setUserEmail("");
 
-      setMessage("You have been added to the naughty list!");
+      setMessage(
+        <>
+          You have been added to the naughty list! Your code is{" "}
+          <span style={{ color: "red" }}>{uniqueCode}</span>. Keep it secret!
+        </>
+      );
     } catch (e) {
       console.error("Error adding document: ", e);
       setMessage("There was an error, please try again.");
@@ -56,16 +80,7 @@ function App() {
               onChange={(e) => setUserName(e.target.value)}
             />
           </div>
-          <div className="form-row">
-            <label htmlFor="email">Email:</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={userEmail}
-              onChange={(e) => setUserEmail(e.target.value)}
-            />
-          </div>
+
           <button type="submit">Enter the naughty list</button>
           {message && <p className="message">{message}</p>}
         </form>
