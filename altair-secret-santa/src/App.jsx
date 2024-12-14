@@ -17,7 +17,6 @@ function App() {
     }
 
     try {
-      // Check if the email already exists
       const q = query(
         collection(firestore, "participants"),
         where("email", "==", userEmail)
@@ -33,7 +32,6 @@ function App() {
         email: userEmail,
       });
 
-      // Reset the form fields after successful submission
       setUserName("");
       setUserEmail("");
 
@@ -65,7 +63,7 @@ function App() {
               id="email"
               name="email"
               value={userEmail}
-              onChange={(e) => setUserEmail(e.target.value)} // Update state
+              onChange={(e) => setUserEmail(e.target.value)}
             />
           </div>
           <button type="submit">Enter the naughty list</button>
