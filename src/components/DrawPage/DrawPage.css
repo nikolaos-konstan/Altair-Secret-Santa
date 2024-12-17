@@ -70,6 +70,7 @@ body {
 input[type="text"] {
   background-color: lightyellow;
   color: black;
+  outline: none;
 }
 
 .form-group button {
